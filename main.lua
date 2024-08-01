@@ -1,37 +1,25 @@
--- Fluent UI Library Setup 
-local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
-local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
-
--- Main Window Creation
-local Window = Fluent:CreateWindow({
-    Title = "Town of Salem Role Snooper",
-    SubTitle = "By BoxTon",
-    Size = UDim2.fromOffset(500, 350),
-    Acrylic = true,
-    Theme = "Dark",
+function sendmsg(msg)
+game.StarterGui:SetCore("ChatMakeSystemMessage", {
+Text = msg;
 })
-
--- Tab Creation
-local Tab = Window:AddTab({Title = "Roles", Icon = "users"})
-
--- Helper Variables
-local rolesAndColors = {
-    ["Mafia"] = Color3.fromRGB(255,0,0),
-    ["Vampire"] = Color3.fromRGB(0,255,0),
-    ["Coven"] = Color3.fromRGB(255,255,0),
-    ["Werewolf"] = Color3.fromRGB(64,64,64),
+end 
+local rolesandcolors = {
+    ["Mafia"] = Color3.fromRGB(135,5,5), 
+    ["Vampire"] = Color3.fromRGB(240,29,29),
+    ["Coven"] = Color3.fromRGB(128,4,184),
+    ["Werewolf"] = Color3.fromRGB(77,46,31),
     ['Bodyguard'] = Color3.fromRGB(0,0,255),
-    ['Medic'] = Color3.fromRGB(0,0,255),
-    ['Guardian'] = Color3.fromRGB(0,0,255),
-    ['Vigilante'] = Color3.fromRGB(0,0,255),
-    ['Liberator'] = Color3.fromRGB(0,0,255),
-    ['Veteran'] = Color3.fromRGB(0,0,255),
-    ['Bounty Hunter'] = Color3.fromRGB(0,0,255),
+    ['Doctor'] = Color3.fromRGB(132,255,0),
+    ['GA'] = Color3.fromRGB(223,224,225),
+    ['Vigilante'] = Color3.fromRGB(132,255,0),
+    ['Liberator'] = Color3.fromRGB(132,255,0),
+    ['Veteran'] = Color3.fromRGB(132,255,0),
+    ['Bounty Hunter'] = Color3.fromRGB(132,255,0),
 }
-local gunsAndRoles = {
+local gunsandroles = {
     ["Shield"] = "Bodyguard",
     ["Knife"] = "Killer",
-    ["GuardianSword"] = "Guardian",
+    ["GuardianSword"] = "GA",
     ["Revolver"] = "Vigilante",
     ["Katana"] = "Assassin",
     ["ShieldK"] = "Liberator",
@@ -40,117 +28,97 @@ local gunsAndRoles = {
     ["Winchester"] = "Bounty Hunter",
 }
 
--- Function to Display Roles
-local function displayRoles()
-    Tab:Clear() -- Clear previous content
+function bypac()
+local ACRemote = game:GetService("ReplicatedStorage").Remotes.FinishAudio
+local ACBypass
+ACBypass = hookmetamethod(game, "__namecall", function(...)
+    local method = getnamecallmethod();
+    local args = ...;
 
-    for _, player in pairs(game.Players:GetPlayers()) do
-        local role = player:GetAttribute("NSXFA") or "Unknown"
-
-        -- Create a label for each player with their role and number
-        Tab:AddLabel({Text = string.format("[%d] %s: %s", player.PlayerData.Number.Value, player.PlayerData.DisplayName.Value, role)})
-    end
-end
--- AC Bypass Function (USE WITH CAUTION)
-function bypassAC()
-    local ACRemote = game:GetService("ReplicatedStorage").Remotes.FinishAudio
-    hookmetamethod(game, "__namecall", function(self, ...)
-        if not checkcaller() and self == ACRemote and getnamecallmethod() == "FireServer" then
-            return wait(9e9)
+    if not checkcaller() then
+        if typeof(self) == "Instance" and self == ACRemote and method == "FireServer" then
+            return wait(9e9);
         end
-        return bypassAC(self, ...) -- Call the original function
-    end)
-end
-
-
--- Role Snooping Function (USE WITH CAUTION)
-function snoopRoles()
-    for _, folder in pairs(game:GetService("Workspace").Game:GetChildren()) do
-        folder.ChildAdded:Connect(function(p)
-            local player = game.Players:FindFirstChild(p.Name)
-            if player and (folder.Name == "Mafia" or folder.Name == "Vampire" or folder.Name == "Coven" or folder.Name == "Medium") then
-                if not player:GetAttribute("NSXFA") then
-                    player:SetAttribute("NSXFA", folder.Name)
-                    displayRoles()
-                end
-                p.ChildAdded:Connect(function(ai)
-                    if ai.Name == "WerewolfVal" and not player:GetAttribute("NSXFA") then
-                        player:SetAttribute("NSXFA", "Werewolf")
-                        displayRoles()
-                    end
-                end)
-            end
-        end)
     end
 
-    game.Players.DescendantAdded:Connect(function(t)
-        if t:IsA("Tool") then
-            local player = t.Parent.Parent
-            if not player:GetAttribute("NSXFA") and gunsAndRoles[t.Name] then
-                player:SetAttribute("NSXFA", gunsAndRoles[t.Name])
-                displayRoles()
-            end
-        end
-    end)
-end
-
-
--- Overhead Name Modification Function
-function modifyOverheadNames()
-    for _, player in pairs(game.Players:GetPlayers()) do
-        spawn(function() -- Use spawn to handle each player concurrently
-            while true do
-                local character = player.Character or player.CharacterAdded:Wait()
-                local overhead = character:FindFirstChild("Overhead", true)
-                if overhead then
-                    overhead.AlwaysOnTop = true
-                    local role = player:GetAttribute("NSXFA")
-                    if player == game.Players.LocalPlayer then
-                        overhead.PlayerName.Text = string.format("[%d] %s", player.PlayerData.Number.Value, player.PlayerData.DisplayName.Value)
-                        overhead.PlayerName.TextColor3 = Color3.fromRGB(255, 80, 192)
-                    elseif role and rolesAndColors[role] then
-                        overhead.PlayerName.Text = string.format("[%d] %s", player.PlayerData.Number.Value, player.PlayerData.DisplayName.Value)
-                        overhead.PlayerName.TextColor3 = rolesAndColors[role]
-                    else
-                        overhead.PlayerName.Text = string.format("[%d] %s", player.PlayerData.Number.Value, player.PlayerData.DisplayName.Value)
-                        overhead.PlayerName.TextColor3 = Color3.fromRGB(255, 255, 255)
-                    end
-                end
-                wait() -- Avoid excessive CPU usage
-            end
-        end)
-    end
-end
-
-
--- Initial Setup
-displayRoles()
-snoopRoles()
-modifyOverheadNames()
-
--- Automatic Updates on Role Changes
-game.Players.PlayerAdded:Connect(function(player)
-    displayRoles()
-    player:GetAttributeChangedSignal("NSXFA"):Connect(displayRoles)
+    return ACBypass(...)
 end)
-game.Players.PlayerRemoving:Connect(displayRoles)
+end
+sendmsg("Role Detection Loaded")
+bypac()
+wait()
+sendmsg("Anticheat bypassed!")
+wait()
+sendmsg("Looking for roles..")
+for i,v in pairs(game:GetService("Workspace").Game:GetChildren()) do 
+    local folder = v.Name
+    v.ChildAdded:Connect(function(p)
+    local plr = game.Players:FindFirstChild(p.Name)
+    if folder == "Mafia" or folder == "Vampire" or folder == "Coven" or folder == "Medium" then
+        if not plr:GetAttribute("NSXFA") then 
 
--- Additional UI Elements
-Tab:AddButton({
-    Title = "Refresh",
-    Description = "Manually refresh the role list",
-    Callback = displayRoles
-})
-Tab:AddToggle("BypassAC", {
-    Title = "Bypass Anticheat (Use with caution!)",
-    Default = false,
-    Callback = function(value)
-        if value then
-            bypassAC()
-        end -- You might need to add a way to disable the bypass if desired
-    end
-})
--- Save Manager (Optional, for persisting settings)
-SaveManager:SetLibrary(Fluent)
-SaveManager:IgnoreThemeSettings()
-SaveManager:BuildConfigSection(Tab) 
+        plr:SetAttribute("NSXFA",folder)
+        sendmsg('[' .. 
+            plr:GetAttribute("NSXFA") ..
+            "] (" .. plr.PlayerData.DisplayName.Value  .. ")[" .. plr.PlayerData.Number.Value  ..  "] has been exposed \n")
+        end 
+    p.ChildAdded:Connect(function(ai)
+        if ai == "WerewolfVal" then 
+        if not plr:GetAttribute("NSXFA") then 
+
+        plr:SetAttribute("NSXFA","Werewolf")
+        sendmsg('[' .. 
+            plr:GetAttribute("NSXFA") ..
+            "] (" .. plr.PlayerData.DisplayName.Value  .. ")[" .. plr.PlayerData.Number.Value  ..  "] has been exposed \n")
+        end 
+            end 
+        end)
+end
+    end)
+end
+
+
+game.Players.DescendantAdded:Connect(function(t)
+    if t:IsA("Tool") then
+        local plr = t.Parent.Parent
+        local tool = t
+        if not game.Players:FindFirstChild(t.Parent.Parent.Name):GetAttribute("NSXFA") then 
+        if gunsandroles[t.Name] ~= nil then
+             plr:SetAttribute("NSXFA",gunsandroles[t.Name])  
+         end 
+
+            wait()
+        sendmsg("[" .. 
+            (plr:GetAttribute("NSXFA") or "Unknown") .. 
+            "] (" .. plr.PlayerData.DisplayName.Value .. ")[" .. plr.PlayerData.Number.Value  ..  "] was found with " .. tool.Name .. '\n')
+        end 
+    end 
+end)
+for i,plr in pairs(game.Players:GetChildren()) do 
+local v = plr
+if plr:GetAttribute("NSXFA") then 
+       sendmsg('[' .. 
+            plr:GetAttribute("NSXFA") ..
+            "] (" .. plr.PlayerData.DisplayName.Value  .. ")[" .. plr.PlayerData.Number.Value  ..  "] has been exposed \n")
+end 
+  spawn(function()
+      while wait() do 
+          local charr = v.Character or v.CharacterAdded:Wait()
+
+local oh = charr:FindFirstChild("Overhead",true)
+if oh then 
+    oh.AlwaysOnTop = true
+    if v == game.Players.LocalPlayer then 
+        oh.PlayerName.Text = '[' .. plr.PlayerData.Number.Value .. '] ' .. plr.PlayerData.DisplayName.Value
+        oh.PlayerName.TextColor3 = Color3.fromRGB(255,80,192)
+    elseif v:GetAttribute("NSXFA")~= nil and  rolesandcolors[v:GetAttribute("NSXFA")] ~= nil then 
+        oh.PlayerName.Text = '[' .. plr.PlayerData.Number.Value .. '] ' .. plr.PlayerData.DisplayName.Value
+        oh.PlayerName.TextColor3 = rolesandcolors[v:GetAttribute("NSXFA")]
+    else
+         oh.PlayerName.Text = '[' .. plr.PlayerData.Number.Value .. '] ' .. plr.PlayerData.DisplayName.Value
+        oh.PlayerName.TextColor3 = Color3.fromRGB(255,255,255)
+    end 
+end 
+          end 
+      end)
+end
