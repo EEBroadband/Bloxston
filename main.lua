@@ -2,8 +2,7 @@
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
-local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
+
 local Window = Fluent:CreateWindow({
     Title = "Town of Salem Role Detection",
     SubTitle = "by YourNameHere",
@@ -90,8 +89,6 @@ Tabs.Player:AddButton({
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService") -- For smooth transitions
-local Tabs = require(your_tabs_module) -- Replace with how you require your tabs module
-
 local TpToJail = Tabs.Player:AddButton({
     Title = "TP To Jail",
     Callback = function()
