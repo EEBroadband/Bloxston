@@ -87,61 +87,42 @@ Tabs.Player:AddButton({
         end
 })
 
-local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService") -- For smooth transitions
-local Workspace = game:GetService("Workspace")
-local TpToJail = Tabs.Player:AddButton({
-    Title = "TP To Jail",
-    Callback = function()
-        local player = Players.LocalPlayer
-        local character = player.Character
-        local HRP = character.HumanoidRootPart
-        local JailCam2 = workspace.ExeCameras.JailCam2
-            local targetPosition = JailCam2.Position + Vector3.new(0, 2, 0) -- Adjusted position
+Tabs.Player:AddButton({
+    Title = "Join Biggest Server",
+    Callback = function ()
+            local synapse = syn
+            local http = game:GetService("HttpService")
+            local TeleportService = game:GetService("TeleportService")
 
-            -- Create a TweenInfo for smooth transition
-            local tweenInfo = TweenInfo.new(
-                1, -- Duration in seconds (adjust as needed)
-                Enum.EasingStyle.Quad, -- Easing style for a smoother effect
-                Enum.EasingDirection.Out -- Easing direction
-            )
+            local gameId = game.PlaceId
+            local serversUrl = "https://games.roblox.com/v1/games/" .. gameId .. "/servers/Public?sortOrder=Asc&limit=100"
 
-            -- Create the tween
-            local tween = TweenService:Create(HRP, tweenInfo, {CFrame = CFrame.new(targetPosition)})
+            local response = synapse.request({
+                Url = serversUrl,
+                Method = "GET"
+            }).Body
 
-            -- Start the tween
-            tween:Play()
-        end
-    end
+            local serverData = http:JSONDecode(response)
+            local largestServer = nil
+            local maxPlayers = 0
+
+            for _, server in ipairs(serverData.data) do
+                if server.playing ~= server.maxPlayers and server.playing > maxPlayers then 
+                    largestServer = server
+                    maxPlayers = server.playing
+                end
+            end
+
+            if largestServer then
+                synapse.queue_on_teleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/EEBroadband/Bloxston/main/main.lua'))()")  
+                TeleportService:TeleportToPlaceInstance(gameId, largestServer.id)
+            else
+                warn("No suitable server found.") 
+            end
+end
 })
 
-local TpToJailCell = Tabs.Player:AddButton({
-    Title = "TP To Jail Cell",
-    Callback = function()
-        -- (Same logic as TpToJail, but change JailCam2 to JailCam1)
-        local player = Players.LocalPlayer
-        local character = player.Character
-        local HRP = character.HumanoidRootPart
-        local JailCam1 = workspace.ExeCameras.JailCam1
 
-        if HRP and JailCam1 then
-            local targetPosition = JailCam1.Position + Vector3.new(0, 2, 0) -- Adjusted position
-
-            -- Create a TweenInfo for smooth transition (same as above)
-            local tweenInfo = TweenInfo.new(
-                1, 
-                Enum.EasingStyle.Quad, 
-                Enum.EasingDirection.Out 
-            )
-
-            -- Create the tween
-            local tween = TweenService:Create(HRP, tweenInfo, {CFrame = CFrame.new(targetPosition)})
-
-            -- Start the tween
-            tween:Play()
-        end
-    end
-})
 
 -- Main Script Functions
 
@@ -275,11 +256,11 @@ SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)
 SaveManager:IgnoreThemeSettings()
 SaveManager:SetIgnoreIndexes({})
-InterfaceManager:SetFolder("FluentScriptHub")
-SaveManager:SetFolder("FluentScriptHub/specific-game")
+InterfaceManager:SetFolder("Arvums")
+SaveManager:SetFolder("Arvums/Bloxston")
 InterfaceManager:BuildInterfaceSection(Tabs.Settings)
 SaveManager:BuildConfigSection(Tabs.Settings)
 
 Window:SelectTab(1)  -- Start on the Main tab
 
-SaveManager:LoadAutoloadConfig() 
+SaveManager:LoadAutoloadConfig()
