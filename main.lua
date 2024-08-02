@@ -77,15 +77,36 @@ game.Players.LocalPlayer.CharacterAppearanceLoaded:Connect(forceNoclipOnSpawn)
 
 
 Tabs.Player:AddButton({
-    Title = "TP Up ( get above house )",
+    Title = "TP Up (get above house)",
     Callback = function()
         local player = game.Players.LocalPlayer
         local character = player.Character
         local HRP = character:FindFirstChild("HumanoidRootPart")
-        local newPosition = HRP.Position + Vector3.new(0, 200, 0)
-        HRP.CFrame = CFrame.new(newPosition)
-        end
+
+        -- Calculate position above the player (adjust as needed)
+        local playerPosition = HRP.Position
+        local newPosition = playerPosition + Vector3.new(0, 10000, 0)
+
+        -- Create the platform (same as before)
+        local platform = Instance.new("Part")
+        platform.Size = Vector3.new(10, 1, 10) 
+        platform.Position = newPosition
+        platform.Anchored = true
+        platform.Parent = workspace 
+
+        -- Move player onto the platform (same as before)
+        HRP.CFrame = CFrame.new(newPosition + Vector3.new(0, 3, 0))
+
+        -- Check player position continuously
+        local connection 
+        connection = game:GetService("RunService").Heartbeat:Connect(function()
+            if HRP.Position.Y < newPosition.Y then  -- Below platform
+                HRP.CFrame = CFrame.new(newPosition + Vector3.new(0, 3, 0)) -- Teleport back
+            end
+        end)
+    end
 })
+
 
 Tabs.Player:AddButton({
     Title = "Join Biggest Server",
