@@ -103,6 +103,7 @@ local TpToJailCell = Tabs.Player:AddButton(
         Title = "TP To Jail Cell",
         Callback = function()
             local HRP = game.Players.LocalPlayer.Character.HumanoidRootPart
+            local JailCam1 = game.Workspace.ExeCameras.JailCam1
             local newPosition = JailCam1.Position
             HRP.CFrame = CFrame.new(newPosition) + Vector3.new(0,2,0)
         end
