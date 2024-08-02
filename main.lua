@@ -89,15 +89,14 @@ Tabs.Player:AddButton({
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService") -- For smooth transitions
+local Workspace = game:GetService("Workspace")
 local TpToJail = Tabs.Player:AddButton({
     Title = "TP To Jail",
     Callback = function()
         local player = Players.LocalPlayer
         local character = player.Character
-        local HRP = character and character:FindFirstChild("HumanoidRootPart")
-        local JailCam2 = workspace:FindFirstChild("ExeCameras", true):FindFirstChild("JailCam2")
-
-        if HRP and JailCam2 then
+        local HRP = character.HumanoidRootPart
+        local JailCam2 = workspace.ExeCameras.JailCam2
             local targetPosition = JailCam2.Position + Vector3.new(0, 2, 0) -- Adjusted position
 
             -- Create a TweenInfo for smooth transition
@@ -122,8 +121,8 @@ local TpToJailCell = Tabs.Player:AddButton({
         -- (Same logic as TpToJail, but change JailCam2 to JailCam1)
         local player = Players.LocalPlayer
         local character = player.Character
-        local HRP = character and character:FindFirstChild("HumanoidRootPart")
-        local JailCam1 = workspace:FindFirstChild("ExeCameras", true):FindFirstChild("JailCam1")
+        local HRP = character.HumanoidRootPart
+        local JailCam1 = workspace.ExeCameras.JailCam1
 
         if HRP and JailCam1 then
             local targetPosition = JailCam1.Position + Vector3.new(0, 2, 0) -- Adjusted position
