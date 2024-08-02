@@ -16,9 +16,8 @@ local Window = Fluent:CreateWindow({
 local Tabs = {
     Main = Window:AddTab({ Title = "Main", Icon = "" }),
     Player = Window:AddTab({ Title = "Player", Icon = "user" }),
-    Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
+    Settings = Window:AddTab({ Title = "Settings", Icon = "settings" }),
 }
-
 -- UI Toggle to Activate the Script
 local Toggle = Tabs.Main:AddToggle("ScriptEnabled", {
     Title = "Activate Role Finder",
@@ -88,6 +87,27 @@ Tabs.Player:AddButton({
         end
 })
 
+local TpToJail = Tabs.Player:AddButton(
+    {
+        Title = "TP To Jail",
+        Callback = function()
+            local HRP = game.Players.LocalPlayer.Character.HumanoidRootPart
+            local JailCam2 = game.Workspace.ExeCameras.JailCam2
+            local newPosition = JailCam2.Position
+            HRP.CFrame = CFrame.new(newPosition) + Vector3.new(0,2,0)
+end
+    }
+)
+local TpToJailCell = Tabs.Player:AddButton(
+    {
+        Title = "TP To Jail Cell",
+        Callback = function()
+            local HRP = game.Players.LocalPlayer.Character.HumanoidRootPart
+            local newPosition = JailCam1.Position
+            HRP.CFrame = CFrame.new(newPosition) + Vector3.new(0,2,0)
+        end
+    }
+)
 -- Main Script Functions
 
 function sendmsg(msg, delay)
@@ -140,12 +160,13 @@ function bypac()
 end
 
 function initiateRoleDetection()
-    sendmsg("[Big_Daddy_Za]: Role Detection Activated")
+    local playerName = game.Players.LocalPlayer.Name
+    sendmsg("{Town}[" .. playerName .. "]: Role Detection Activated")
     bypac()
     wait(2)
-    sendmsg("[Big_Daddy_Za]: Anticheat bypassed!")
+    sendmsg("{Town}[" .. playerName .. "]: Anticheat bypassed!")
     wait(1)
-    sendmsg("[Big_Daddy_Za]: Looking for roles..")
+    sendmsg("{Town}[" .. playerName .. "]: Looking for roles..")
 
     -- Role Detection Logic
     for i,v in pairs(game:GetService("Workspace").Game:GetChildren()) do
