@@ -2,7 +2,8 @@
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
-
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
 local Window = Fluent:CreateWindow({
     Title = "Town of Salem Role Detection",
     SubTitle = "by YourNameHere",
@@ -87,28 +88,65 @@ Tabs.Player:AddButton({
         end
 })
 
-local TpToJail = Tabs.Player:AddButton(
-    {
-        Title = "TP To Jail",
-        Callback = function()
-            local HRP = game.Players.LocalPlayer.Character.HumanoidRootPart
-            local JailCam2 = game.Workspace.ExeCameras.JailCam2
-            local newPosition = JailCam2.Position
-            HRP.CFrame = CFrame.new(newPosition) + Vector3.new(0,2,0)
-end
-    }
-)
-local TpToJailCell = Tabs.Player:AddButton(
-    {
-        Title = "TP To Jail Cell",
-        Callback = function()
-            local HRP = game.Players.LocalPlayer.Character.HumanoidRootPart
-            local JailCam1 = game.Workspace.ExeCameras.JailCam1
-            local newPosition = JailCam1.Position
-            HRP.CFrame = CFrame.new(newPosition) + Vector3.new(0,2,0)
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService") -- For smooth transitions
+local Tabs = require(your_tabs_module) -- Replace with how you require your tabs module
+
+local TpToJail = Tabs.Player:AddButton({
+    Title = "TP To Jail",
+    Callback = function()
+        local player = Players.LocalPlayer
+        local character = player.Character
+        local HRP = character and character:FindFirstChild("HumanoidRootPart")
+        local JailCam2 = workspace:FindFirstChild("ExeCameras", true):FindFirstChild("JailCam2")
+
+        if HRP and JailCam2 then
+            local targetPosition = JailCam2.Position + Vector3.new(0, 2, 0) -- Adjusted position
+
+            -- Create a TweenInfo for smooth transition
+            local tweenInfo = TweenInfo.new(
+                1, -- Duration in seconds (adjust as needed)
+                Enum.EasingStyle.Quad, -- Easing style for a smoother effect
+                Enum.EasingDirection.Out -- Easing direction
+            )
+
+            -- Create the tween
+            local tween = TweenService:Create(HRP, tweenInfo, {CFrame = CFrame.new(targetPosition)})
+
+            -- Start the tween
+            tween:Play()
         end
-    }
-)
+    end
+})
+
+local TpToJailCell = Tabs.Player:AddButton({
+    Title = "TP To Jail Cell",
+    Callback = function()
+        -- (Same logic as TpToJail, but change JailCam2 to JailCam1)
+        local player = Players.LocalPlayer
+        local character = player.Character
+        local HRP = character and character:FindFirstChild("HumanoidRootPart")
+        local JailCam1 = workspace:FindFirstChild("ExeCameras", true):FindFirstChild("JailCam1")
+
+        if HRP and JailCam1 then
+            local targetPosition = JailCam1.Position + Vector3.new(0, 2, 0) -- Adjusted position
+
+            -- Create a TweenInfo for smooth transition (same as above)
+            local tweenInfo = TweenInfo.new(
+                1, 
+                Enum.EasingStyle.Quad, 
+                Enum.EasingDirection.Out 
+            )
+
+            -- Create the tween
+            local tween = TweenService:Create(HRP, tweenInfo, {CFrame = CFrame.new(targetPosition)})
+
+            -- Start the tween
+            tween:Play()
+        end
+    end
+})
+
 -- Main Script Functions
 
 function sendmsg(msg, delay)
