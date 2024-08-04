@@ -4,8 +4,8 @@ local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/d
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
 local Window = Fluent:CreateWindow({
-    Title = "Town of Salem Role Detection",
-    SubTitle = "by YourNameHere",
+    Title = "BIG DADDY ZA HUB",
+    SubTitle = "BY BIG DADDY ZA",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, 460),
     Acrylic = true,
@@ -75,6 +75,8 @@ end
 game.Players.LocalPlayer.CharacterAdded:Connect(forceNoclipOnSpawn)
 game.Players.LocalPlayer.CharacterAppearanceLoaded:Connect(forceNoclipOnSpawn)
 
+local platform = nil  -- Declare platform outside to track its existence
+local connection = nil
 
 Tabs.Player:AddButton({
     Title = "TP Up (get above house)",
@@ -83,30 +85,41 @@ Tabs.Player:AddButton({
         local character = player.Character
         local HRP = character:FindFirstChild("HumanoidRootPart")
 
+
         -- Calculate position above the player (adjust as needed)
         local playerPosition = HRP.Position
         local newPosition = playerPosition + Vector3.new(0, 10000, 0)
 
         -- Create the platform (same as before)
-        local platform = Instance.new("Part")
-        platform.Size = Vector3.new(10, 1, 10) 
+        platform = Instance.new("Part")
+        platform.Size = Vector3.new(10000, 1, 10000)
         platform.Position = newPosition
         platform.Anchored = true
-        platform.Parent = workspace 
-
-        -- Move player onto the platform (same as before)
-        HRP.CFrame = CFrame.new(newPosition + Vector3.new(0, 3, 0))
-
-        -- Check player position continuously
-        local connection 
-        connection = game:GetService("RunService").Heartbeat:Connect(function()
-            if HRP.Position.Y < newPosition.Y then  -- Below platform
-                HRP.CFrame = CFrame.new(newPosition + Vector3.new(0, 3, 0)) -- Teleport back
-            end
-        end)
-    end
+        platform.Parent = workspace
+        end
 })
 
+Tabs.Player:AddButton({
+    Title = "TP Down",
+    Callback = function()
+        -- Check if the platform exists before trying to teleport
+        if platform then
+            local player = game.Players.LocalPlayer
+            local character = player.Character
+            local HRP = character:FindFirstChild("HumanoidRootPart")
+
+            HRP.CFrame = CFrame.new(platform.Position - Vector3.new(0, 9997, 0)) -- Teleport to ground level
+
+            -- Optional: Destroy the platform or stop the teleport loop here
+            platform:Destroy()
+
+            if connection then
+                connection:Disconnect()
+                connection = nil
+            end
+        end
+    end
+})
 
 Tabs.Player:AddButton({
     Title = "Join Biggest Server",
@@ -198,12 +211,12 @@ end
 
 function initiateRoleDetection()
     local playerName = game.Players.LocalPlayer.Name
-    sendmsg("{Town}[" .. playerName .. "]: Role Detection Activated")
+    sendmsg("{Town} [" .. playerName .. "]: Role Detection Activated")
     bypac()
     wait(2)
-    sendmsg("{Town}[" .. playerName .. "]: Anticheat bypassed!")
+    sendmsg("{Town} [" .. playerName .. "]: Anticheat bypassed!")
     wait(1)
-    sendmsg("{Town}[" .. playerName .. "]: Looking for roles..")
+    sendmsg("{Town} [" .. playerName .. "]: Looking for roles..")
 
     -- Role Detection Logic
     for i,v in pairs(game:GetService("Workspace").Game:GetChildren()) do
