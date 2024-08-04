@@ -82,43 +82,38 @@ Tabs.Player:AddButton({
     Title = "TP Up (get above house)",
     Callback = function()
         local player = game.Players.LocalPlayer
-        local character = player.Character
-        local HRP = character:FindFirstChild("HumanoidRootPart")
-
-
-        -- Calculate position above the player (adjust as needed)
-        local playerPosition = HRP.Position
-        local newPosition = playerPosition + Vector3.new(0, 10000, 0)
-
-        -- Create the platform (same as before)
-        platform = Instance.new("Part")
-        platform.Size = Vector3.new(10000, 1, 10000)
-        platform.Position = newPosition
-        platform.Anchored = true
-        platform.Parent = workspace
+        local HRP = player.Character.HumanoidRootPart
+        local currentPos = HRP.Position
+        local newPos = Vector3.new(currentPos.X, currentPos.Y + 200, currentPos.Z)
+        HRP.CFrame = CFrame.new(newPos)
+        -- create part under player
+        local part = Instance.new("Part")
+        part.Name = "TPPart"
+        part.Size = Vector3.new(7,1,7)
+        part.Position = HRP.Position - Vector3.new(0,2,0)
+        part.Anchored = true
+        part.CanCollide = true
+        part.Parent = game.Workspace
         end
 })
 
 Tabs.Player:AddButton({
-    Title = "TP Down",
+    Title = "TP Down ( under map ) ",
     Callback = function()
-        -- Check if the platform exists before trying to teleport
-        if platform then
-            local player = game.Players.LocalPlayer
-            local character = player.Character
-            local HRP = character:FindFirstChild("HumanoidRootPart")
-
-            HRP.CFrame = CFrame.new(platform.Position - Vector3.new(0, 9997, 0)) -- Teleport to ground level
-
-            -- Optional: Destroy the platform or stop the teleport loop here
-            platform:Destroy()
-
-            if connection then
-                connection:Disconnect()
-                connection = nil
-            end
+         local player = game.Players.LocalPlayer
+        local HRP = player.Character.HumanoidRootPart
+        local currentPos = HRP.Position
+        local newPos = Vector3.new(currentPos.X, currentPos.Y - 205, currentPos.Z)
+        HRP.CFrame = CFrame.new(newPos)
+        -- create part under player
+        local part = Instance.new("Part")
+        part.Name = "TPPart"
+        part.Size = Vector3.new(7,1,7)
+        part.Position = HRP.Position - Vector3.new(0,2,0)
+        part.Anchored = true
+        part.CanCollide = true
+        part.Parent = game.Workspace
         end
-    end
 })
 
 Tabs.Player:AddButton({
